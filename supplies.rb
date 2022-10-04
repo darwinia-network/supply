@@ -1,20 +1,12 @@
-require 'sinatra'
 require 'scale_rb'
 require 'net/http'
-require 'json'
+require_relative './helpers/darwinia'
+require_relative './helpers/evm'
+require_relative './helpers/tron'
 
-require_relative './darwinia'
-require_relative './evm'
-require_relative './tron'
-
-get '/' do
-  'Hello Darwinia!'
-end
-
-get '/supply' do
-  content_type :json
+def calc_supplies
   # prepare darwinia metadata
-  metadata_content = File.open(File.join(__dir__, 'darwinia-metadata-1242.json')).read
+  metadata_content = File.open(File.join(__dir__, 'config', 'darwinia-metadata-1242.json')).read
   metadata = JSON.parse(metadata_content)
 
   # TOTAL SUPPLY
@@ -54,5 +46,5 @@ get '/supply' do
     totalSupply: total_supply,
     circulatingSupply: a + b + c,
     maxSupply: 10_000_000_000
-  }.to_json
+  }
 end
