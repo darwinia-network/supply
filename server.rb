@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'json'
-require_relative './supplies'
 
 get '/' do
   'Hello Darwinia!'
@@ -8,5 +7,5 @@ end
 
 get '/supplies' do
   content_type :json
-  calc_supplies.to_json
+  File.read(File.join(__dir__, 'supplies.json'))
 end
