@@ -6,8 +6,8 @@ module Tron
       the_token = result['trc20token_balances'].find do |token|
         token['tokenId'].strip == token_contract
       end
-      decimal = the_token['tokenDecimal']
-      the_token['balance'].to_f / 10**decimal
+      decimals = the_token['tokenDecimal']
+      the_token['balance'].to_f / 10**decimals
     end
 
     def balances_of(url, addresses, token_contract)

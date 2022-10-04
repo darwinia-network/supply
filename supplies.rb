@@ -17,7 +17,7 @@ def calc_supplies
   # RING TOTAL SUPPLY
   # ##########################
   darwinia_url = 'https://rpc.darwinia.network'
-  total_supply = Darwinia.total_supply(darwinia_url, metadata)
+  total_supply = Darwinia::Ring.total_supply(darwinia_url, metadata)
 
   # ##########################
   # ILLIQUID AND BONDED RING
@@ -28,10 +28,10 @@ def calc_supplies
     0x8db5c746c14cf05e182b10576a9ee765265366c3b7fd53c41d43640c97f4a8b8
     0x88db6cf10428d2608cd2ca2209971d0227422dc1f53c6ec0848fa610848a6ed3
   ]
-  illiquid_on_darwinia = Darwinia.balances_of(darwinia_url, account_ids, metadata).sum
+  illiquid_on_darwinia = Darwinia::Ring.balances_of(darwinia_url, account_ids, metadata).sum
 
   # locked ring by bonded, from subscan
-  bonded_on_darwinia = Darwinia.bonded_locked_balance
+  bonded_on_darwinia = Darwinia::Ring.bonded_locked_balance
 
   # illiquid ring on tron
   tronscan_url = 'https://apilist.tronscan.org/api/account'

@@ -3,14 +3,17 @@ module Evm
     def balance_of(url, address, token_contract)
       data = "0x70a08231000000000000000000000000#{address[2..]}"
       result = RPC.eth_call(url, token_contract, data, 'latest')
-      decimal = decimal(url, token_contract)
-      result.to_i(16).to_f / 10**decimal
+      result.to_i(16)
     end
 
-    def decimal(url, token_contract)
+    def decimals(url, token_contract)
       result = RPC.eth_call(url, token_contract, '0x313ce567', 'latest')
+      result.to_i(16)
+    end
+
+    def total_supply(url, token_contract)
+      result = RPC.eth_call(url, token_contract, '0x18160ddd', 'latest')
       result.to_i(16)
     end
   end
 end
-
