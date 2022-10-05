@@ -1,9 +1,6 @@
 require 'sinatra'
 require 'json'
 
-require 'scale_rb'
-require_relative './helpers/darwinia'
-
 get '/' do
   'Hello Darwinia!'
 end
@@ -21,4 +18,12 @@ end
 get '/seilppuswithbalances' do
   content_type :json
   File.read(File.join(__dir__, 'supplies.json'))
+end
+
+not_found do
+  content_type :json
+  status 404
+  {
+    error: 404
+  }.to_json
 end
