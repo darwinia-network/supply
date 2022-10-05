@@ -5,13 +5,23 @@ get '/' do
   'Hello Darwinia!'
 end
 
-get '/supplies' do
+get '/supply/ring' do
   content_type :json
   result = File.read(File.join(__dir__, 'supplies.json'))
   result = JSON.parse(result)
   {
-    ringSupplies: result['ringSupplies'],
-    ktonSupplies: result['ktonSupplies']
+    code: 0,
+    data: result['ringSupplies']
+  }.to_json
+end
+
+get '/supply/kton' do
+  content_type :json
+  result = File.read(File.join(__dir__, 'supplies.json'))
+  result = JSON.parse(result)
+  {
+    code: 0,
+    data: result['ktonSupplies']
   }.to_json
 end
 

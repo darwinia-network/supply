@@ -73,11 +73,14 @@ def calc_supplies
   # get bonded locked data from subscan
   bonded = Subscan.bonded_locked_balances(subscan_url)
 
+  # height = Darwinia.system_number(darwinia_url, metadata)
+  # block_hash = RPC.chain_getBlockHash(darwinia_url, height)
+
   # ##########################
   # RING
   # ##########################
-  ring_balances = ring_balances(darwinia_url, tronscan_url, metadata).merge({ bonded: bonded[:ring] })
   ring_total_supply = Darwinia::Ring.total_supply(darwinia_url, metadata)
+  ring_balances = ring_balances(darwinia_url, tronscan_url, metadata).merge({ bonded: bonded[:ring] })
   # locked(bonded, illiquid) RING
   ring_locked =
     ring_balances[:trsry] +
@@ -90,8 +93,8 @@ def calc_supplies
   # ##########################
   # KTON
   # ##########################
-  kton_balances = kton_balances(ethereum_url, tronscan_url).merge({ bonded: bonded[:kton] })
   kton_total_supply = Darwinia::Kton.total_supply(darwinia_url)
+  kton_balances = kton_balances(ethereum_url, tronscan_url).merge({ bonded: bonded[:kton] })
   # locked(bonded, illiquid) KTON
   kton_locked = kton_balances[:bonded] - kton_balances[:trobk]
   kton_circulating_supply = kton_total_supply - kton_locked # wrong here?
