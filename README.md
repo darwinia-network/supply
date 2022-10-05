@@ -1,8 +1,20 @@
 # Supply
 
-Server providing data of Darwina assets supply.
+Server providing supply data of DARWINA tokens.
 
-Ruby lang should be installed first.
+## Pre
+```bash
+# install build tools
+sudo apt update 
+sudo apt install build-essential 
+
+# install ruby and bundler
+sudo apt install ruby # easist way. `rvm` is better
+gem install bundler
+
+# install rust, needed by gem `blake2b_rs`
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
 
 ## Install
 
@@ -35,8 +47,8 @@ Ruby lang should be installed first.
       ruby server.rb
       ```
       ```bash
-      curl http://127.0.0.1:4567/ring/supply
-      curl http://127.0.0.1:4567/kton/supply
+      curl http://127.0.0.1:4567/supply/ring
+      curl http://127.0.0.1:4567/supply/kton
       curl http://127.0.0.1:4567/seilppuswithbalances
       ```
 
