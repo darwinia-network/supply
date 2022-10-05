@@ -35,7 +35,9 @@ Ruby lang should be installed first.
       ruby server.rb
       ```
       ```bash
-      curl http://127.0.0.1:4567/supplies
+      curl http://127.0.0.1:4567/ring/supply
+      curl http://127.0.0.1:4567/kton/supply
+      curl http://127.0.0.1:4567/seilppuswithbalances
       ```
 
 ## Other Operations
