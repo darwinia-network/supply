@@ -10,6 +10,7 @@ def calc_and_write_supplies_to_file
   File.write(File.join(__dir__, 'supplies.json'), supplies.to_json)
 end
 
+# get ring balances of important accounts
 def ring_balances(darwinia_url, tronscan_url, metadata)
   # darwinia accounts: trobk, trsry, multi, fundn
   account_ids = %w[
@@ -44,6 +45,7 @@ def ring_balances(darwinia_url, tronscan_url, metadata)
   }
 end
 
+# get kton balances of important accounts
 def kton_balances(ethereum_url, tronscan_url)
   # ethereum
   kton_contract_on_ethereum = '0x9F284E1337A815fe77D2Ff4aE46544645B20c5ff'

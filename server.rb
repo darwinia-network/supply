@@ -10,11 +10,15 @@ end
 
 get '/supplies' do
   content_type :json
-  File.read(File.join(__dir__, 'supplies.json'))
+  result = File.read(File.join(__dir__, 'supplies.json'))
+  result = JSON.parse(result)
+  {
+    ringSupplies: result['ringSupplies'],
+    ktonSupplies: result['ktonSupplies']
+  }.to_json
 end
 
-get '/kton_supplies' do
+get '/seilppuswithbalances' do
   content_type :json
-  total_supply = Darwinia::Kton.total_supply('https://rpc.darwinia.network')
-  { totalSupply: total_supply }.to_json
+  File.read(File.join(__dir__, 'supplies.json'))
 end
