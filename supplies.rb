@@ -5,13 +5,60 @@ require_relative './helpers/tron'
 require_relative './helpers/evm'
 require_relative './helpers/subscan'
 
-def calc_and_write_supplies_to_file
-  supplies = calc_supplies
-  File.write(File.join(__dir__, 'supplies.json'), supplies.to_json)
+def supplies
+  # prepare darwinia metadata
+  metadata_content = File.read(File.join(__dir__, 'config', 'darwinia-metadata-1242.json'))
+  metadata = JSON.parse(metadata_content)
+
+  darwinia_url = 'https://rpc.darwinia.network'
+  ethereum_url = 'https://eth-mainnet.g.alchemy.com/v2/YXraeqSzO1wUUOD2WC51zLUyecVFwj6h'
+  tronscan_url = 'https://apilist.tronscan.org/api'
+  subscan_url = 'https://darwinia.api.subscan.io/api/scan/token'
+
+  # get bonded locked data from subscan
+  bonded = Subscan.bonded_locked_balances(subscan_url)
+
+  # ##########################
+  # RING
+  # ##########################
+  ring_balances = _ring_balances(darwinia_url, tronscan_url, metadata).merge({ bonded: bonded[:ring] })
+  ring_locked = # locked(bonded, illiquid) RING
+    ring_balances[:trsry] +
+    ring_balances[:multi] +
+    ring_balances[:fundn] +
+    ring_balances[:bonded] +
+    ring_balances[:tron3]
+  # ring supplies result
+  ring_total_supply = Darwinia::Ring.total_supply(darwinia_url, metadata)
+  ring_circulating_supply = ring_total_supply - ring_locked
+
+  # ##########################
+  # KTON
+  # ##########################
+  kton_balances = _kton_balances(ethereum_url, tronscan_url).merge({ bonded: bonded[:kton] })
+  kton_locked = kton_balances[:bonded] - kton_balances[:trobk] # locked(bonded, illiquid) KTON
+  # kton supplies result
+  kton_total_supply = Darwinia::Kton.total_supply(darwinia_url)
+  kton_circulating_supply = kton_total_supply - kton_locked # wrong here?
+
+  {
+    ringSupplies: {
+      totalSupply: ring_total_supply,
+      circulatingSupply: ring_circulating_supply,
+      maxSupply: 10_000_000_000
+    },
+    ringBalances: ring_balances,
+    ktonSupplies: {
+      totalSupply: kton_total_supply,
+      circulatingSupply: kton_circulating_supply,
+      maxSupply: kton_total_supply
+    },
+    ktonBalances: kton_balances
+  }
 end
 
 # get ring balances of important accounts
-def ring_balances(darwinia_url, tronscan_url, metadata)
+def _ring_balances(darwinia_url, tronscan_url, metadata)
   # darwinia accounts: trobk, trsry, multi, fundn
   account_ids = %w[
     0x6d6f646c64612f74726f626b0000000000000000000000000000000000000000
@@ -46,7 +93,7 @@ def ring_balances(darwinia_url, tronscan_url, metadata)
 end
 
 # get kton balances of important accounts
-def kton_balances(ethereum_url, tronscan_url)
+def _kton_balances(ethereum_url, tronscan_url)
   # ethereum
   kton_contract_on_ethereum = '0x9F284E1337A815fe77D2Ff4aE46544645B20c5ff'
   ethbk = Erc20.total_supply(ethereum_url, kton_contract_on_ethereum)
@@ -57,62 +104,5 @@ def kton_balances(ethereum_url, tronscan_url)
   {
     ethbk: ethbk,
     trobk: trobk
-  }
-end
-
-def calc_supplies
-  # prepare darwinia metadata
-  metadata_content = File.read(File.join(__dir__, 'config', 'darwinia-metadata-1242.json'))
-  metadata = JSON.parse(metadata_content)
-
-  darwinia_url = 'https://rpc.darwinia.network'
-  ethereum_url = 'https://eth-mainnet.g.alchemy.com/v2/YXraeqSzO1wUUOD2WC51zLUyecVFwj6h'
-  tronscan_url = 'https://apilist.tronscan.org/api'
-  subscan_url = 'https://darwinia.api.subscan.io/api/scan/token'
-
-  # get bonded locked data from subscan
-  bonded = Subscan.bonded_locked_balances(subscan_url)
-
-  # height = Darwinia.system_number(darwinia_url, metadata)
-  # block_hash = RPC.chain_getBlockHash(darwinia_url, height)
-
-  # ##########################
-  # RING
-  # ##########################
-  ring_total_supply = Darwinia::Ring.total_supply(darwinia_url, metadata)
-  ring_balances = ring_balances(darwinia_url, tronscan_url, metadata).merge({ bonded: bonded[:ring] })
-  # locked(bonded, illiquid) RING
-  ring_locked =
-    ring_balances[:trsry] +
-    ring_balances[:multi] +
-    ring_balances[:fundn] +
-    ring_balances[:bonded] +
-    ring_balances[:tron3]
-  ring_circulating_supply = ring_total_supply - ring_locked
-
-  # ##########################
-  # KTON
-  # ##########################
-  kton_total_supply = Darwinia::Kton.total_supply(darwinia_url)
-  kton_balances = kton_balances(ethereum_url, tronscan_url).merge({ bonded: bonded[:kton] })
-  # locked(bonded, illiquid) KTON
-  kton_locked = kton_balances[:bonded] - kton_balances[:trobk]
-  kton_circulating_supply = kton_total_supply - kton_locked # wrong here?
-
-  {
-    # ring
-    ringSupplies: {
-      totalSupply: ring_total_supply,
-      circulatingSupply: ring_circulating_supply,
-      maxSupply: 10_000_000_000
-    },
-    ringBalances: ring_balances,
-    # kton
-    ktonSupplies: {
-      totalSupply: kton_total_supply,
-      circulatingSupply: kton_circulating_supply,
-      maxSupply: kton_total_supply
-    },
-    ktonBalances: kton_balances
   }
 end
