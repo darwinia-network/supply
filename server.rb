@@ -1,14 +1,27 @@
 require 'sinatra'
 require 'json'
 
+def to_camel(str)
+  tmp = str[0].downcase + str[1..]
+  splits = tmp.split('_')
+  splits[0] + splits[1..].collect(&:capitalize).join
+end
+
 get '/' do
   'Hello Darwinia!'
 end
 
 get '/supply/ring' do
-  content_type :json
   result = File.read(File.join(__dir__, 'supplies.json'))
   result = JSON.parse(result)
+
+  if params['t']
+    content_type :text
+    t = to_camel(params['t'])
+    return result['ringSupplies'][t].to_s if %w[totalSupply circulatingSupply maxSupply].include?(t)
+  end
+
+  content_type :json
   {
     code: 0,
     data: result['ringSupplies']
@@ -16,9 +29,16 @@ get '/supply/ring' do
 end
 
 get '/supply/kton' do
-  content_type :json
   result = File.read(File.join(__dir__, 'supplies.json'))
   result = JSON.parse(result)
+
+  if params['t']
+    content_type :text
+    t = to_camel(params['t'])
+    return result['ktonSupplies'][t].to_s if %w[totalSupply circulatingSupply maxSupply].include?(t)
+  end
+
+  content_type :json
   {
     code: 0,
     data: result['ktonSupplies']
