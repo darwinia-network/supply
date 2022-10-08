@@ -2,6 +2,14 @@
 
 Server providing data of Darwina assets supply.
 
+## Important Files
+
+* server.rb
+  server which provide http api.
+
+* supplies.rb
+  the `supplies()` function in this file is to get the newest supplies data.
+
 ## Pre
 ```bash
 # install build tools
@@ -18,25 +26,21 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ## Install
 
-1. Install server
+```bash
+git clone https://github.com/darwinia-network/supply 
+cd supply
+bundle install
+```
 
-   ```bash
-   git clone https://github.com/darwinia-network/supply 
-   cd supply
-   bundle install
-   ```
+## Add Crontab
 
-2. Install your crontab schedule
+update supplies data every 1 minute.
 
-   ```bash
-   whenever --update-crontab
-   ```
-   This crontab will update data every minute.
+```
+* * * * * /bin/bash -l -c 'cd <PATH_YOUR_SUPPLY_DIR> && rake supplies >/dev/null 2>&1'
+```
 
-   > You can run `bundle exec whenever` to see you cron syntax schedule.
-   > This command will simply show you your `schedule.rb` file converted to cron syntax. It does not read or write your crontab file.
-
-## Run
+## Run Server
    1. (Optional) install `puma` app server in production
       ```bash
       gem install puma
@@ -71,6 +75,21 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   rake supplies
   ```
 
+## DOCKER
 
+### Build Image
 
+```bash
+docker build -t supply .
+```
 
+### Add Crontab
+
+```
+* * * * * <PATH_YOUR_SUPPLY_DIR>/update_supplies.sh >/dev/null 2>&1
+```
+
+### Run Server
+```bash
+<PATH_YOUR_SUPPLY_DIR>/run_server.sh
+```
