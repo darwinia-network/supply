@@ -4,7 +4,6 @@ GEM
     blake2b_rs (0.1.3)
       ffi (~> 1.0)
       thermite (~> 0)
-    chronic (0.10.2)
     ffi (1.15.5)
     minitar (0.9)
     mustermann (3.0.0)
@@ -28,8 +27,6 @@ GEM
       tomlrb (~> 1.2)
     tilt (2.0.11)
     tomlrb (1.3.0)
-    whenever (1.0.0)
-      chronic (>= 0.6.3)
     xxhash (0.5.0)
 
 PLATFORMS
@@ -38,7 +35,6 @@ PLATFORMS
 DEPENDENCIES
   scale_rb (= 0.1.1)
   sinatra
-  whenever
 
 BUNDLED WITH
    2.1.4
