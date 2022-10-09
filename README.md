@@ -32,14 +32,6 @@ cd supply
 bundle install
 ```
 
-## Add Crontab
-
-update supplies data every 1 minute.
-
-```
-* * * * * /bin/bash -l -c 'cd <PATH_YOUR_SUPPLY_DIR> && rake supplies >/dev/null 2>&1'
-```
-
 ## Run Server
    1. (Optional) install `puma` app server in production
       ```bash
@@ -48,8 +40,9 @@ update supplies data every 1 minute.
 
    2. Run server
       ```bash
-      ruby server.rb
+      ./run.sh
       ```
+
       ```bash
       curl http://127.0.0.1:4567/supply/ring
       curl http://127.0.0.1:4567/supply/ring?t=CirculatingSupply
@@ -64,17 +57,6 @@ update supplies data every 1 minute.
       curl http://127.0.0.1:4567/seilppuswithbalances
       ```
 
-## Other Operations
-* Uninstall crontab:
-  ```bash
-  crantab -r
-  ```
-
-* Update supplies data manually:
-  ```bash
-  rake supplies
-  ```
-
 ## DOCKER
 
 ### Build Image
@@ -83,13 +65,7 @@ update supplies data every 1 minute.
 docker build -t supply .
 ```
 
-### Add Crontab
-
-```
-* * * * * <PATH_YOUR_SUPPLY_DIR>/update_supplies.sh >/dev/null 2>&1
-```
-
 ### Run Server
 ```bash
-<PATH_YOUR_SUPPLY_DIR>/run_server.sh
+docker run -it -p 4567:4567 --name supply supply
 ```
