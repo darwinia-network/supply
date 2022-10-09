@@ -4,10 +4,10 @@ Server providing data of Darwina assets supply.
 
 ## Important Files
 
-* server.rb
+* server.rb  
   server which provide http api.
 
-* supplies.rb
+* supplies.rb  
   the `supplies()` function in this file is to get the newest supplies data.
 
 ## Pre
