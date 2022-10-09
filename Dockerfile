@@ -17,4 +17,4 @@ RUN gem install puma
 COPY . .
 
 ENV RACK_ENV=production
-# CMD ["ruby", "server.rb"]
+CMD ["./run.sh"]
