@@ -2,6 +2,8 @@
 
 Server providing data of Darwina assets supply.
 
+[Distribution](./distribution.png)
+
 ## Important Files
 
 * server.rb  
