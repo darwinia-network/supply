@@ -2,7 +2,7 @@
 
 Server providing data of Darwina assets supply.
 
-[Distribution](./distribution.png)
+![Distribution](./distribution.png)
 
 ## Important Files
 
