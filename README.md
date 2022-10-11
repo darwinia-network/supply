@@ -67,5 +67,5 @@ docker build -t supply .
 
 ### Run Server
 ```bash
-docker run -it -p 4567:4567 --name supply supply
+docker run -it -p 4567:4567 --name supply-server supply
 ```

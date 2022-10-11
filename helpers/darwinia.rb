@@ -6,17 +6,35 @@ module Darwinia
       key_value = [
         [account_id.to_bytes]
       ]
-      result = Client.get_storage3(url, 'System', 'Account', key_value, metadata, at)
+      result = Substrate::Client.get_storage3(url, 'System', 'Account', key_value, metadata, at)
       result[:data].transform_values! { |v| v.to_f / 10**9 }
       result
     end
 
     def balances_total_issuance(url, metadata, at = nil)
-      Client.get_storage3(url, 'Balances', 'TotalIssuance', nil, metadata, at).to_f / 10**9
+      Substrate::Client.get_storage3(url, 'Balances', 'TotalIssuance', nil, metadata, at).to_f / 10**9
     end
 
     def system_number(url, metadata)
-      Client.get_storage3(url, 'System', 'Number', nil, metadata)
+      Substrate::Client.get_storage3(url, 'System', 'Number', nil, metadata)
+    end
+
+    # returns: [ring_staking_amount, kton_staking_amount]
+    def locked_balance_by_bonding(url, metadata, account_id = nil, at = nil)
+      value_of_key = ([[account_id.to_bytes]] unless account_id.nil?)
+      items = Substrate::Client.get_storage3(url, 'Staking', 'Ledger', value_of_key, metadata, at)
+      items.reduce({ ring: 0, kton: 0 }) do |sums, item|
+        # ring staking amount
+        ring_staking_amount = item[:storage][:active]
+
+        # kton staking amount
+        kton_staking_amount = item[:storage][:active_kton]
+
+        {
+          ring: sums[:ring] + ring_staking_amount / 10**9.to_f,
+          kton: sums[:kton] + kton_staking_amount / 10**9.to_f
+        }
+      end
     end
   end
 
@@ -49,6 +67,17 @@ module Darwinia
       def balance_of(url, account_id, metadata, at = nil)
         account_info = Darwinia.system_account(url, account_id, metadata, at)
         account_info[:data][:free_kton]
+      end
+
+      def locked_balance_by_bonding(url, metadata, account_id = nil, at = nil)
+        value_of_key = ([[account_id.to_bytes]] unless account_id.nil?)
+        storages = Substrate::Client.get_storage3(url, 'Kton', 'Locks', value_of_key, metadata, at)
+        balance = storages.reduce(0) do |sum, item|
+          id = item[:storage][0][0][:id].to_utf8
+          amount = item[:storage][0][0][:amount]
+          id == 'da/staki' ? sum + amount : sum
+        end
+        balance / 10**9
       end
     end
   end

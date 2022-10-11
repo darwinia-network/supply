@@ -13,10 +13,9 @@ def supplies
   darwinia_url = 'https://rpc.darwinia.network'
   ethereum_url = 'https://eth-mainnet.g.alchemy.com/v2/YXraeqSzO1wUUOD2WC51zLUyecVFwj6h'
   tronscan_url = 'https://apilist.tronscan.org/api'
-  subscan_url = 'https://darwinia.api.subscan.io/api/scan/token'
 
   # get bonded locked data from subscan
-  bonded = Subscan.bonded_locked_balances(subscan_url)
+  bonded = Darwinia.locked_balance_by_bonding(darwinia_url, metadata)
 
   # ##########################
   # RING
@@ -91,6 +90,14 @@ def _ring_balances(darwinia_url, tronscan_url, metadata)
     tron3: tron3  # 3 accounts balance sum on tron
   }
 end
+
+# def _bonded_locked_ring(darwinia_url, metadata)
+#   Darwinia.locked_balance_by_bonding(darwinia_url, metadata)
+# end
+#
+# metadata_content = File.read(File.join(__dir__, 'config', 'darwinia-metadata-1242.json'))
+# metadata = JSON.parse(metadata_content)
+# p _bonded_locked_ring('https://rpc.darwinia.network', metadata)
 
 # get kton balances of important accounts
 def _kton_balances(ethereum_url, tronscan_url)
