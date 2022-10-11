@@ -20,13 +20,12 @@ def supplies
   # ##########################
   # RING
   # ##########################
-  ring_balances = _ring_balances(darwinia_url, tronscan_url, metadata).merge({ bonded: bonded[:ring] })
+  ring_balances = _ring_balances(darwinia_url, metadata).merge({ bonded: bonded[:ring] })
   ring_locked = # locked(bonded, illiquid) RING
     ring_balances[:trsry] +
     ring_balances[:multi] +
     ring_balances[:fundn] +
-    ring_balances[:bonded] +
-    ring_balances[:tron3]
+    ring_balances[:bonded]
   # ring supplies result
   ring_total_supply = Darwinia::Ring.total_supply(darwinia_url, metadata)
   ring_circulating_supply = ring_total_supply - ring_locked
@@ -35,10 +34,10 @@ def supplies
   # KTON
   # ##########################
   kton_balances = _kton_balances(ethereum_url, tronscan_url).merge({ bonded: bonded[:kton] })
-  kton_locked = kton_balances[:bonded] - kton_balances[:trobk] # locked(bonded, illiquid) KTON
+  kton_locked = kton_balances[:bonded] # - kton_balances[:trobk] # locked(bonded, illiquid) KTON
   # kton supplies result
   kton_total_supply = Darwinia::Kton.total_supply(darwinia_url)
-  kton_circulating_supply = kton_total_supply - kton_locked # wrong here?
+  kton_circulating_supply = kton_total_supply - kton_locked
 
   {
     ringSupplies: {
@@ -57,7 +56,7 @@ def supplies
 end
 
 # get ring balances of important accounts
-def _ring_balances(darwinia_url, tronscan_url, metadata)
+def _ring_balances(darwinia_url, metadata)
   # darwinia accounts: trobk, trsry, multi, fundn
   account_ids = %w[
     0x6d6f646c64612f74726f626b0000000000000000000000000000000000000000
@@ -72,22 +71,12 @@ def _ring_balances(darwinia_url, tronscan_url, metadata)
   ethbk_address = '0xD1B10B114f1975d8BCc6cb6FC43519160e2AA978'
   ethbk = Erc20.balance_of(darwinia_url, ethbk_address, wring_contract)
 
-  # tron accounts: 3 accounts on tron
-  ring_contract = 'TL175uyihLqQD656aFx3uhHYe1tyGkmXaW'
-  addresses = %w[
-    TDWzV6W1L1uRcJzgg2uKa992nAReuDojfQ
-    TSu1fQKFkTv95U312R6E94RMdixsupBZDS
-    TTW2Vpr9TCu6gxGZ1yjwqy7R79hEH8iscC
-  ]
-  tron3 = Trc20.balances_of(tronscan_url, addresses, ring_contract).sum
-
   {
     ethbk: ethbk, # backing rings for ethereum
     trobk: trobk, # backing rings for tron
     trsry: trsry, # treasury balance
     multi: multi, # multi account balance
-    fundn: fundn, # foundation balance
-    tron3: tron3  # 3 accounts balance sum on tron
+    fundn: fundn # foundation balance
   }
 end
 
