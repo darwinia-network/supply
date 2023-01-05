@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'json'
+require 'scale_rb'
 
 def to_camel(str)
   tmp = str[0].downcase + str[1..]
@@ -48,6 +49,13 @@ end
 get '/seilppuswithbalances' do
   content_type :json
   File.read(File.join(__dir__, 'supplies.json'))
+end
+
+get '/metadata' do
+  content_type :json
+  url = params['endpoint'] || 'https://rpc.darwinia.network'
+  at = params['block'] || nil
+  Substrate::Client.get_metadata(url, at).to_json
 end
 
 not_found do

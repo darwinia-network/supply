@@ -3,7 +3,6 @@ require 'net/http'
 require_relative './helpers/darwinia'
 require_relative './helpers/tron'
 require_relative './helpers/evm'
-require_relative './helpers/subscan'
 
 def supplies
   # prepare darwinia metadata
@@ -14,7 +13,7 @@ def supplies
   ethereum_url = 'https://eth-mainnet.g.alchemy.com/v2/YXraeqSzO1wUUOD2WC51zLUyecVFwj6h'
   tronscan_url = 'https://apilist.tronscan.org/api'
 
-  # get bonded locked data from subscan
+  # get bonded locked data
   bonded = Darwinia.locked_balance_by_bonding(darwinia_url, metadata)
 
   # ##########################
@@ -23,7 +22,6 @@ def supplies
   ring_balances = _ring_balances(darwinia_url, metadata).merge({ bonded: bonded[:ring] })
   ring_locked = # locked(bonded, illiquid) RING
     ring_balances[:trsry] +
-    ring_balances[:multi] +
     ring_balances[:fundn] +
     ring_balances[:bonded]
   # ring supplies result
@@ -57,14 +55,13 @@ end
 
 # get ring balances of important accounts
 def _ring_balances(darwinia_url, metadata)
-  # darwinia accounts: trobk, trsry, multi, fundn
+  # darwinia accounts: trobk, trsry, fundn
   account_ids = %w[
     0x6d6f646c64612f74726f626b0000000000000000000000000000000000000000
     0x6d6f646c64612f74727372790000000000000000000000000000000000000000
     0x8db5c746c14cf05e182b10576a9ee765265366c3b7fd53c41d43640c97f4a8b8
-    0x88db6cf10428d2608cd2ca2209971d0227422dc1f53c6ec0848fa610848a6ed3
   ]
-  trobk, trsry, multi, fundn = Darwinia::Ring.balances_of(darwinia_url, account_ids, metadata)
+  trobk, trsry, fundn = Darwinia::Ring.balances_of(darwinia_url, account_ids, metadata)
 
   # dsc account: ethbk
   wring_contract = '0xE7578598Aac020abFB918f33A20faD5B71d670b4'
@@ -75,7 +72,6 @@ def _ring_balances(darwinia_url, metadata)
     ethbk: ethbk, # backing rings for ethereum
     trobk: trobk, # backing rings for tron
     trsry: trsry, # treasury balance
-    multi: multi, # multi account balance
     fundn: fundn # foundation balance
   }
 end
